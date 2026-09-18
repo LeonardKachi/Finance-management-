@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Framework</title>
+<style>
+  :root {
+    --bg: #f5f5f7;
+    --surface: #ffffff;
+    --surface-2: #f5f5f7;
+    --text: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --divider: #d2d2d7;
+    --accent: #0066cc;
+    --accent-soft: rgba(0, 102, 204, 0.08);
+    --good: #1d7a3c;
+    --good-soft: rgba(29, 122, 60, 0.08);
+    --warn: #b9650a;
+    --warn-soft: rgba(185, 101, 10, 0.08);
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 6px 20px rgba(0,0,0,0.04);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #000000;
+      --surface: #1c1c1e;
+      --surface-2: #2c2c2e;
+      --text: #f5f5f7;
+      --text-secondary: #98989d;
+      --divider: #38383a;
+      --accent: #2997ff;
+      --accent-soft: rgba(41, 151, 255, 0.14);
+      --good: #32d74b;
+      --good-soft: rgba(50, 215, 75, 0.12);
+      --warn: #ff9f0a;
+      --warn-soft: rgba(255, 159, 10, 0.12);
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --surface-2: #2c2c2e;
+    --text: #f5f5f7;
+    --text-secondary: #98989d;
+    --divider: #38383a;
+    --accent: #2997ff;
+    --accent-soft: rgba(41, 151, 255, 0.14);
+    --good: #32d74b;
+    --good-soft: rgba(50, 215, 75, 0.12);
+    --warn: #ff9f0a;
+    --warn-soft: rgba(255, 159, 10, 0.12);
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased;
+    padding: 64px 32px 96px;
+  }
+  .page {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  @media (min-width: 1400px) {
+    .page { max-width: 1080px; }
+  }
+
+  /* Header */
+  .hero { text-align: center; margin-bottom: 56px; }
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 600;
+    letter-spacing: -0.021em;
+    line-height: 1.05;
+    margin: 0 0 14px;
+  }
+  .hero p {
+    font-size: 19px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* Section rhythm */
+  .section { margin-bottom: 56px; }
+  .section-head {
+    margin-bottom: 20px;
+  }
+  .section-head h2 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 6px;
+  }
+  .section-head p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+    max-width: 560px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 28px;
+  }
+  .card + .card { margin-top: 16px; }
+
+  /* Form fields */
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label {
+    font-size: 13px;
+    font-weight: 590;
+    color: var(--text-secondary);
+  }
+  .field input {
+    background: var(--surface-2);
+    border: 1px solid var(--divider);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 17px;
+    padding: 11px 14px;
+    border-radius: 12px;
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  .field .hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  /* Currency segmented control */
+  .segmented {
+    display: inline-flex;
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+    margin-bottom: 28px;
+  }
+  .segmented button {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 590;
+    padding: 7px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .segmented button.active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid var(--divider);
+    margin: 24px 0;
+  }
+
+  /* Result rows */
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .result {
+    padding: 18px 20px;
+    border-radius: 14px;
+    background: var(--surface-2);
+  }
+  .result.emphasis { background: var(--accent-soft); }
+  .result-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .result-value {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .result.emphasis .result-value { color: var(--accent); }
+  .result-note {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+  .basis {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .basis.net { background: var(--good-soft); color: var(--good); }
+  .basis.gross { background: var(--warn-soft); color: var(--warn); }
+  .basis.other { background: var(--accent-soft); color: var(--accent); }
+
+  /* Explainer list */
+  .explainer { display: flex; flex-direction: column; gap: 18px; }
+  .explainer-item {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .explainer-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .explainer-item .formula {
+    font-size: 14px;
+    font-weight: 590;
+    color: var(--text);
+  }
+  .explainer-item .desc {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  .callout {
+    background: var(--surface);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    padding: 24px 28px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .callout strong { color: var(--text); font-weight: 600; }
+
+  /* Study budget breakdown */
+  .study-category {
+    background: var(--surface-2);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+  .study-category:last-child { margin-bottom: 0; }
+  .study-category-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .study-category-head .name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .study-category-head .monthly {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .study-sub {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .study-sub div { text-align: center; }
+  .study-sub .slabel {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 3px;
+  }
+  .study-sub .svalue {
+    font-size: 14px;
+    font-weight: 590;
+  }
+  .capped-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: var(--warn-soft);
+    color: var(--warn);
+    white-space: nowrap;
+  }
+  .study-flow-note {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  /* Sticky nav */
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--surface);
+    border-bottom: 1px solid var(--divider);
+    border-radius: 14px;
+    margin-bottom: 48px;
+  }
+  .site-nav-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 10px;
+    justify-content: center;
+  }
+  .site-nav a {
+    font-size: 13px;
+    font-weight: 590;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 7px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  .site-nav a:hover { background: var(--surface-2); color: var(--text); }
+  .theme-toggle {
+    background: var(--surface-2);
+    border: none;
+    color: var(--text-secondary);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 590;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-left: 6px;
+  }
+  .theme-toggle:hover { color: var(--text); }
+
+  /* Investment type cards */
+  .invest-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+  .invest-card {
+    background: var(--surface-2);
+    border-radius: 14px;
+    padding: 20px 22px;
+  }
+  .invest-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .invest-card-head .name {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .risk-tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .risk-low { background: var(--good-soft); color: var(--good); }
+  .risk-medium { background: var(--warn-soft); color: var(--warn); }
+  .risk-high { background: rgba(255, 69, 58, 0.12); color: #d70015; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .risk-high { color: #ff6961; }
+  }
+  :root[data-theme="dark"] .risk-high { color: #ff6961; }
+  .invest-card p {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+    margin: 0 0 8px;
+  }
+  .invest-card p:last-child { margin-bottom: 0; }
+  .invest-card p strong { color: var(--text); font-weight: 600; }
+  .invest-return {
+    font-size: 13px;
+    font-weight: 590;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  /* Stock market facts */
+  .fact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .fact-box {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .fact-box .fnum {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .fact-box .flabel {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+  .prose p {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text-secondary);
+    margin: 0 0 14px;
+    max-width: 700px;
+  }
+  .prose p:last-child { margin-bottom: 0; }
+  .prose strong { color: var(--text); font-weight: 600; }
+
+  /* About / landing */
+  .about-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .about-step {
+    background: var(--surface-2);
+    border-radius: 14px;
+    padding: 18px 20px;
+  }
+  .about-step .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .about-step h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+  .about-step p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+  }
+  .disclaimer-strip {
+    background: var(--warn-soft);
+    color: var(--warn);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    line-height: 1.55;
+    margin-top: 18px;
+  }
+  .disclaimer-strip strong { font-weight: 700; }
+
+  .mode-strip {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+  .mode-strip strong { font-weight: 700; }
+
+  /* Report download buttons */
+  .report-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family: var(--font);
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .report-btn:hover { opacity: 0.9; }
+  .report-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .report-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .report-card p {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+    max-width: 420px;
+  }
+
+  /* Print report (hidden on screen, shown only when printing) */
+  #printArea { display: none; }
+
+  @media print {
+    body * { visibility: hidden; }
+    #printArea, #printArea * { visibility: visible; }
+    #printArea {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 0;
+      background: #ffffff;
+      color: #111111;
+    }
+    .print-title { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+    .print-meta { font-size: 11px; color: #555555; margin-bottom: 20px; }
+    .print-section { margin-bottom: 20px; page-break-inside: avoid; }
+    .print-section h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #555555;
+      border-bottom: 1px solid #cccccc;
+      padding-bottom: 6px;
+      margin-bottom: 10px;
+    }
+    .print-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      padding: 5px 0;
+      border-bottom: 1px solid #eeeeee;
+    }
+    .print-row .plabel { color: #444444; }
+    .print-row .pvalue { font-weight: 600; color: #000000; }
+    .print-note { font-size: 11px; color: #777777; margin-top: 3px; }
+    .print-footer { font-size: 10.5px; color: #777777; margin-top: 24px; border-top: 1px solid #cccccc; padding-top: 10px; }
+  }
+
+  @media (max-width: 560px) {
+    body { padding: 40px 16px 72px; }
+    .hero h1 { font-size: 34px; }
+    .section-head h2 { font-size: 22px; }
+    .card { padding: 18px; }
+    .explainer-item { grid-template-columns: 1fr; gap: 4px; }
+    .site-nav-inner { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; }
+    .report-card { flex-direction: column; align-items: stretch; }
+    .report-btn { justify-content: center; width: 100%; }
+    .invest-grid { grid-template-columns: 1fr; }
+    .about-steps { grid-template-columns: 1fr; }
+    .fact-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (min-width: 700px) and (max-width: 959px) {
+    .page { max-width: 700px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <h1>Financial Framework</h1>
+    <p>A practical starting point for managing money - budgeting, debt, saving, and investing - built for anyone figuring this out for the first time. Enter your numbers once and see where you actually stand.</p>
+  </div>
+
+  <div class="section" id="about">
+    <div class="card">
+      <div class="section-head" style="margin-bottom: 0;">
+        <h2 style="font-size: 22px;">About this tool</h2>
+        <p>Financial Framework is a free, open calculator for anyone starting to take their money seriously - students, early-career professionals, or anyone who's never had a clear picture of where their income actually goes. No sign-up, no data leaving your browser: everything you type is calculated on your own device and never sent anywhere.</p>
+      </div>
+      <div class="about-steps">
+        <div class="about-step">
+          <span class="step-num">1</span>
+          <h3>Enter your numbers</h3>
+          <p>Income, expenses, debt, or a block account - whatever applies to you. Nothing is required to see the layout.</p>
+        </div>
+        <div class="about-step">
+          <span class="step-num">2</span>
+          <h3>See where you stand</h3>
+          <p>Every figure updates live against well-known budgeting, debt, and investing benchmarks - with plain explanations for each one.</p>
+        </div>
+        <div class="about-step">
+          <span class="step-num">3</span>
+          <h3>Save your breakdown</h3>
+          <p>Download your financial breakdown or your study budget as a PDF to keep, print, or share - no account needed.</p>
+        </div>
+      </div>
+      <div class="disclaimer-strip">
+        <strong>Not financial advice.</strong> This tool applies general, widely used rules of thumb to the numbers you provide. It doesn't know your full situation - taxes, dependents, local cost of living, or existing debt can all change what actually fits. Treat every result as a starting point for your own thinking, or a conversation with a qualified advisor, not a final answer.
+      </div>
+    </div>
+  </div>
+
+  <nav class="site-nav">
+    <div class="site-nav-inner">
+      <a href="#about">About</a>
+      <a href="#your-numbers">Your numbers</a>
+      <a href="#wealth-targets">Budget rules</a>
+      <a href="#debt-affordability">Debt &amp; affordability</a>
+      <a href="#growth-time">Growth &amp; time</a>
+      <a href="#compound-growth">Compound growth</a>
+      <a href="#investments">Investing 101</a>
+      <a href="#stock-market">The stock market</a>
+      <a href="#rules-explained">Rules explained</a>
+      <a href="#study-budget">Study budget</a>
+      <button type="button" class="theme-toggle" id="themeToggleBtn" onclick="toggleTheme()">Dark mode</button>
+    </div>
+  </nav>
+
+  <div class="section" id="your-numbers">
+    <div class="section-head">
+      <h2>Your numbers</h2>
+      <p>Everything below updates as you type. Fields you leave blank are simply skipped in the results that need them.</p>
+    </div>
+    <div class="card">
+      <div class="segmented" id="currencySeg">
+        <button data-cur="EUR" class="active">EUR €</button>
+        <button data-cur="USD">USD $</button>
+        <button data-cur="GBP">GBP £</button>
+        <button data-cur="NGN">NGN ₦</button>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="grossIncome">Monthly gross income</label>
+          <input type="number" id="grossIncome" placeholder="5,000" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="netIncome">Monthly net (take-home)</label>
+          <input type="number" id="netIncome" placeholder="3,800" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="expenses">Monthly expenses</label>
+          <input type="number" id="expenses" placeholder="2,200" min="0" step="any">
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="field-row">
+        <div class="field">
+          <label for="debtPayments">Monthly debt payments</label>
+          <input type="number" id="debtPayments" placeholder="300" min="0" step="any">
+          <span class="hint">Loans, credit cards, student debt - not rent</span>
+        </div>
+        <div class="field">
+          <label for="returnRate">Expected annual return</label>
+          <input type="number" id="returnRate" placeholder="7" min="0" step="any">
+          <span class="hint">Used for the doubling-time estimate, in %</span>
+        </div>
+        <div class="field">
+          <label for="age">Current age</label>
+          <input type="number" id="age" placeholder="30" min="0" step="1">
+          <span class="hint">Used for the retirement savings benchmark</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="wealth-targets">
+    <div class="section-head">
+      <h2>Wealth and budget targets</h2>
+      <p>The six figures most people budget around, split by whether they're measured against gross or net income. The percentages below adjust automatically to how much breathing room your income gives you.</p>
+    </div>
+    <div class="card">
+      <div class="mode-strip" id="modeStrip">
+        <strong id="modeLabel">Balanced mode</strong>
+        <span id="modeDesc"> - enter your monthly net income and expenses above so this can adapt to you. Until then, these are the standard, middle-of-the-road figures.</span>
+      </div>
+      <div class="result-grid">
+        <div class="result emphasis">
+          <div class="result-label">Financial independence portfolio <span class="basis net">Net x 240</span></div>
+          <div class="result-value" id="outFI">-</div>
+          <div class="result-note">Portfolio size that replaces this income forever, at a 5% annual withdrawal rate - 20 years of income. This multiple doesn't change with your budget mode.</div>
+        </div>
+        <div class="result emphasis">
+          <div class="result-label">Monthly investing target <span class="basis gross" id="basisInvest">Gross x 0.20</span></div>
+          <div class="result-value" id="outInvest20">-</div>
+          <div class="result-note">What to put toward long-term investments every month to reach that portfolio.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Total housing cap <span class="basis net" id="basisHousing">Net x 0.60</span></div>
+          <div class="result-value" id="outHousing60">-</div>
+          <div class="result-note">Ceiling for rent or mortgage, utilities, maintenance, and home insurance combined.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Rent ceiling <span class="basis gross" id="basisRent">Gross x 0.30</span></div>
+          <div class="result-value" id="outRent30">-</div>
+          <div class="result-note">Base rent or mortgage payment alone.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Guilt-free spending <span class="basis net" id="basisGuiltFree">Net x 0.20</span></div>
+          <div class="result-value" id="outGuiltFree">-</div>
+          <div class="result-note">Discretionary budget for the month - no tracking required.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Emergency fund target <span class="basis other" id="basisEmergency">Expenses x 6</span></div>
+          <div class="result-value" id="outEmergency">-</div>
+          <div class="result-note">Held somewhere liquid and interest-bearing, not invested.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="debt-affordability">
+    <div class="section-head">
+      <h2>Debt, insurance, and affordability</h2>
+      <p>Common lender and planning benchmarks worth checking yourself against, even if no one asked.</p>
+    </div>
+    <div class="card">
+      <div class="result-grid">
+        <div class="result">
+          <div class="result-label">Debt-to-income ceiling <span class="basis gross">Gross x 0.36</span></div>
+          <div class="result-value" id="outDTI36">-</div>
+          <div class="result-note">Most lenders want total monthly debt - housing included - under 36% of gross income.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Your current debt-to-income</div>
+          <div class="result-value" id="outDTIActual">-</div>
+          <div class="result-note">Monthly debt payments as a share of gross income, right now.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Car and transport cap <span class="basis gross">Gross x 0.10</span></div>
+          <div class="result-value" id="outCar10">-</div>
+          <div class="result-note">All-in transport cost ceiling: loan or lease, fuel, insurance, and maintenance.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Life insurance coverage <span class="basis gross">Annual gross x 10</span></div>
+          <div class="result-value" id="outLifeInsurance">-</div>
+          <div class="result-note">A common starting multiple; adjust up with dependents or debt, down with neither.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="growth-time">
+    <div class="section-head">
+      <h2>Growth and time</h2>
+      <p>Two figures that depend on time rather than a single month's income.</p>
+    </div>
+    <div class="card">
+      <div class="result-grid">
+        <div class="result">
+          <div class="result-label">Years to double your money <span class="basis other">Rule of 72</span></div>
+          <div class="result-value" id="outRule72">-</div>
+          <div class="result-note">72 divided by your expected annual return, in percent.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Retirement savings benchmark</div>
+          <div class="result-value" id="outRetirementBenchmark">-</div>
+          <div class="result-note">A common target for total retirement savings, based on age and annual gross income.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="compound-growth">
+    <div class="section-head">
+      <h2>Compound growth calculator</h2>
+      <p>The clearest argument for investing early. Set a starting amount, a monthly contribution, and an expected return, and see how much of the final total is actually your own money versus growth.</p>
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field">
+          <label for="cgInitial">Starting amount</label>
+          <input type="number" id="cgInitial" placeholder="0" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="cgMonthly">Monthly contribution</label>
+          <input type="number" id="cgMonthly" placeholder="100" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="cgRate">Expected annual return</label>
+          <input type="number" id="cgRate" placeholder="7" min="0" step="any">
+          <span class="hint">Historical S&amp;P 500 long-run average: roughly 10% before inflation, 7% after</span>
+        </div>
+        <div class="field">
+          <label for="cgYears">Number of years</label>
+          <input type="number" id="cgYears" placeholder="10" min="1" step="1">
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="result-grid">
+        <div class="result emphasis">
+          <div class="result-label">Final value</div>
+          <div class="result-value" id="cgFinal">-</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Total you contributed</div>
+          <div class="result-value" id="cgContributed">-</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Growth from returns</div>
+          <div class="result-value" id="cgGrowth">-</div>
+          <div class="result-note">Money the market added that you never had to earn or save yourself.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="save-financial">
+    <div class="card report-card">
+      <div>
+        <div class="section-head" style="margin-bottom: 0;">
+          <h2 style="font-size: 19px;">Save your financial breakdown</h2>
+          <p>Everything above - your numbers, budget targets, debt and affordability, growth and compounding - as one PDF, based on what's currently filled in.</p>
+        </div>
+      </div>
+      <button class="report-btn" onclick="downloadFinancialReport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download as PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="section" id="investments">
+    <div class="section-head">
+      <h2>Investing 101: where the money can go</h2>
+      <p>Every option here trades risk for potential return differently. None of them are wrong - the right mix depends on when you'll need the money and how much volatility you can sit through without panicking.</p>
+    </div>
+    <div class="invest-grid">
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">High-yield savings accounts</span>
+          <span class="risk-tag risk-low">Low risk</span>
+        </div>
+        <div class="invest-return">Typical return: around 4–4.5% APY in a normal rate environment, versus roughly 0.4% for a standard savings account</div>
+        <p>A savings account with a bank that pays meaningfully more interest than the standard rate, usually offered by online-only banks with lower overhead. Your money stays fully accessible.</p>
+        <p><strong>Why it's good:</strong> it's where your emergency fund and near-term goals belong - no risk of loss, and the interest at least partly offsets inflation.</p>
+        <p><strong>Watch out for:</strong> rates move with central bank policy, so today's rate isn't locked in. It won't build long-term wealth on its own.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Certificates of deposit / fixed deposits</span>
+          <span class="risk-tag risk-low">Low risk</span>
+        </div>
+        <div class="invest-return">Typical return: similar to or slightly above high-yield savings, fixed for the term</div>
+        <p>You lock money away for a set term - three months to several years - in exchange for a guaranteed rate that won't fall even if market rates do.</p>
+        <p><strong>Why it's good:</strong> predictable, useful for money you know you won't need before a specific date.</p>
+        <p><strong>Watch out for:</strong> early withdrawal usually costs you a penalty, and your money is locked out of better opportunities if rates rise later.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Government and corporate bonds</span>
+          <span class="risk-tag risk-low">Low to medium risk</span>
+        </div>
+        <div class="invest-return">Typical return: modest, historically a few points above cash, moving with interest rates</div>
+        <p>You're lending money to a government or a company for a fixed period in exchange for regular interest payments and your principal back at the end. Government bonds from stable countries carry the least risk; corporate bonds pay a bit more for taking on the company's credit risk.</p>
+        <p><strong>Why it's good:</strong> steadier than stocks, and bond prices often hold up or rise when stock markets fall, which is why they're used to smooth out a portfolio.</p>
+        <p><strong>Watch out for:</strong> bond prices fall when interest rates rise, and corporate bonds carry the risk that the company defaults.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Individual stocks (shares)</span>
+          <span class="risk-tag risk-high">High risk, per company</span>
+        </div>
+        <div class="invest-return">Typical return: highly variable - a single company can lose most of its value or multiply many times over</div>
+        <p>A share is a unit of ownership in one specific company. Buy a share of a company and you own a small slice of its profits, its losses, and its future.</p>
+        <p><strong>Why it's good:</strong> if you pick well and hold long enough, the upside is uncapped, and you share directly in a company's growth.</p>
+        <p><strong>Watch out for:</strong> concentration risk. A handful of individual stocks can swing your entire portfolio on one earnings report, one lawsuit, one competitor. Most beginners are better served starting with funds, below, and treating individual stocks as a smaller, separate bet if they choose to make one at all.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Index funds and ETFs</span>
+          <span class="risk-tag risk-medium">Medium risk, diversified</span>
+        </div>
+        <div class="invest-return">Typical return: the S&amp;P 500 has averaged roughly 10% a year nominally since 1926, around 7% after inflation, though any single year can swing sharply in either direction</div>
+        <p>A single fund that holds hundreds or thousands of companies at once, tracking a market index like the S&amp;P 500 rather than trying to beat it. An ETF trades like a stock during the day; an index mutual fund prices once a day - the underlying holdings are usually near-identical.</p>
+        <p><strong>Why it's good:</strong> instant diversification, very low fees (often well under 0.2% a year), and no need to pick winners - you own the whole market's average outcome, which historically beats most professional stock-pickers over time.</p>
+        <p><strong>Watch out for:</strong> it moves with the whole market, so a bad year for stocks is a bad year for your index fund too. It rewards patience over years, not months.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Actively managed mutual funds</span>
+          <span class="risk-tag risk-medium">Medium risk, diversified</span>
+        </div>
+        <div class="invest-return">Typical return: varies by manager; most underperform a comparable index fund after fees over long periods</div>
+        <p>Similar to an index fund - a pooled basket of investments - but run by a manager actively picking what to buy and sell, trying to beat the market rather than match it.</p>
+        <p><strong>Why it's good:</strong> professional oversight and, occasionally, genuine skill in specific niches or market conditions.</p>
+        <p><strong>Watch out for:</strong> higher fees, often 1% a year or more, which compound against you over decades. The evidence consistently shows most active funds don't beat their benchmark index by enough to justify the extra cost.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Real estate and REITs</span>
+          <span class="risk-tag risk-medium">Medium risk</span>
+        </div>
+        <div class="invest-return">Typical return: historically comparable to stocks over the very long run, with different timing of ups and downs</div>
+        <p>Owning property directly, or buying a Real Estate Investment Trust - a fund that owns income-producing property and pays out most of its rental income as dividends, tradable like a stock.</p>
+        <p><strong>Why it's good:</strong> a REIT gives real estate exposure without needing a deposit, a mortgage, or a tenant to manage, and adds a different kind of diversification to a stock-and-bond portfolio.</p>
+        <p><strong>Watch out for:</strong> direct property is illiquid and capital-intensive; REITs are sensitive to interest rates and the property sector they focus on.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Retirement and pension accounts</span>
+          <span class="risk-tag risk-medium">Depends what's inside</span>
+        </div>
+        <div class="invest-return">Typical return: whatever the underlying investments earn - the account itself is a tax wrapper, not an asset</div>
+        <p>A tax-advantaged account for long-term retirement savings - the exact name and rules depend on the country: 401(k) and IRA in the US, pension schemes in the UK and EU, and similar structures elsewhere. Money inside is usually invested in funds you choose.</p>
+        <p><strong>Why it's good:</strong> tax relief on contributions or withdrawals, and often an employer match - free money for showing up. Starting in your 20s rather than your 30s can nearly double the final balance for the same monthly contribution, purely from extra compounding time.</p>
+        <p><strong>Watch out for:</strong> money is typically locked away until a set retirement age, with penalties for early withdrawal, so it isn't the place for funds you might need sooner.</p>
+      </div>
+
+      <div class="invest-card">
+        <div class="invest-card-head">
+          <span class="name">Cryptocurrency</span>
+          <span class="risk-tag risk-high">Very high risk</span>
+        </div>
+        <div class="invest-return">Typical return: extremely wide historical range in both directions - not comparable to the asset classes above</div>
+        <p>Digital assets like Bitcoin or Ethereum, traded on crypto exchanges rather than regulated stock markets in most jurisdictions.</p>
+        <p><strong>Why it's good:</strong> for those who understand the technology and can tolerate large swings, it offers exposure to a genuinely new asset class not correlated with traditional markets in the same way.</p>
+        <p><strong>Watch out for:</strong> extreme volatility, weaker regulatory protection than stocks or bonds, and a real risk of losing most or all of what you put in. Treat it, if at all, as a small slice of money you could afford to lose entirely - never the emergency fund or the rent.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="stock-market">
+    <div class="section-head">
+      <h2>How the stock market actually works</h2>
+      <p>The mechanics behind the numbers above, in plain terms.</p>
+    </div>
+    <div class="card">
+      <div class="fact-grid">
+        <div class="fact-box">
+          <div class="fnum">~10%</div>
+          <div class="flabel">Average annual S&amp;P 500 return since 1926, before inflation</div>
+        </div>
+        <div class="fact-box">
+          <div class="fnum">~7%</div>
+          <div class="flabel">Same figure, adjusted for inflation</div>
+        </div>
+        <div class="fact-box">
+          <div class="fnum">~74%</div>
+          <div class="flabel">Of the last 100 years the market finished up rather than down</div>
+        </div>
+        <div class="fact-box">
+          <div class="fnum">0</div>
+          <div class="flabel">Reliable way to know which specific days those gains will land on</div>
+        </div>
+      </div>
+      <div class="prose">
+        <p><strong>A share is ownership, not a lottery ticket.</strong> When you buy a share, you own a tiny slice of a real company - its factories, its brands, its future profits. The price moves because buyers and sellers keep re-guessing what that slice of future profit is worth, based on earnings, interest rates, competitors, and plain sentiment.</p>
+        <p><strong>You get paid two ways.</strong> The share price can rise over time as the company grows - that's a capital gain, only real once you sell. Some companies also pay out part of their profit directly to shareholders on a regular schedule - that's a dividend, paid whether or not you sell.</p>
+        <p><strong>Volatility is the price of admission, not a warning sign.</strong> Markets fall sharply and often - double-digit drops happen most decades. What the long-run averages above hide is that they're built from wildly uneven years: strong gains most of the time, sharp losses some of the time, and no way to know in advance which is coming. Selling during a drop locks in the loss; staying invested is what lets the long-run average apply to you.</p>
+        <p><strong>Diversification is the free lunch.</strong> Owning one company means one bad decision by one CEO can wipe out your position. Owning an index fund of hundreds of companies means no single failure sinks the whole investment - some companies will do badly in any given year, but the broad economy tends to grow.</p>
+        <p><strong>Dollar-cost averaging turns volatility into a non-event.</strong> Investing a fixed amount on a regular schedule - say, monthly - means you automatically buy more units when prices are low and fewer when prices are high, without ever having to predict which is which. It's less about timing the market and more about removing the need to.</p>
+        <p><strong>Time is the one input you can't buy back.</strong> Two people investing the same monthly amount at the same return, ten years apart, will not end up with similar totals - the earlier starter usually ends up with roughly double, sometimes more, purely because their money compounded for longer. That's the entire argument for starting now with a small amount rather than waiting for a larger one later.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="rules-explained">
+    <div class="section-head">
+      <h2>What each rule means</h2>
+      <p>None of these are laws. They're starting points, built for a typical single income with no unusual circumstances.</p>
+    </div>
+    <div class="card">
+      <div class="explainer">
+        <div class="explainer-item">
+          <div class="formula">Budget mode</div>
+          <div class="desc">The percentages in the section above are not fixed. They shift based on how much room your net income gives you over your expenses: tighter when income barely covers costs, standard for most people, and more aggressive - mirroring research on self-made millionaires' savings habits - once income clears expenses comfortably. See "Wealth and budget targets" for which mode currently applies to you.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Net x 240</div>
+          <div class="desc">Same math as the 4% safe withdrawal rate, just expressed monthly. 240 months is 20 years, and withdrawing 5% a year from that portfolio replaces one year of income indefinitely under typical historical market returns. This multiple doesn't change with budget mode.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Gross x invest %</div>
+          <div class="desc">In balanced mode this is 20%, the single most common habit among self-made millionaires in multiple studies. In high performer mode it rises toward 30%, closer to the average savings rate researchers have found among actual millionaires. In building-stability mode it drops to a small but real 5%, because starting the habit matters more than the size at first.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Net x housing % / Gross x rent %</div>
+          <div class="desc">Two different housing rules on purpose. The rent figure is the traditional affordability line for the payment alone; the housing figure is the outer limit once utilities, insurance, and upkeep are folded in. Both loosen in building-stability mode, since housing takes up more of a tighter budget by necessity, and both tighten in high performer mode to resist lifestyle inflation.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Net x guilt-free %</div>
+          <div class="desc">The relief valve in the classic 50/30/20 budget - wants and discretionary spending, guilt-free because it's already budgeted for. Smaller in tighter budgets, deliberately capped even in high performer mode so spending doesn't creep up with income.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Expenses x emergency months</div>
+          <div class="desc">Six months of actual spending, not income, covers a job loss or income gap without touching investments. Building-stability mode targets a smaller, three-month starter fund first, since six months can feel out of reach when income is already tight - a partial buffer still beats none.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Gross x 0.36 (total debt)</div>
+          <div class="desc">The back-end ratio mortgage lenders use: all debt payments, including housing, under 36% of gross income. Above 43% is where most conventional loans stop qualifying.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Gross x 0.10 (car)</div>
+          <div class="desc">Often paired with a 20% down payment and a loan term capped at 4 years - buy less car than you can technically finance.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Annual gross x 10 (life insurance)</div>
+          <div class="desc">A rough starting point for term life coverage if others depend on your income. Add outstanding debt and future costs like education on top; subtract existing savings and coverage.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Rule of 72</div>
+          <div class="desc">Divide 72 by your expected annual return to estimate how many years it takes an investment to double. At 7%, that's roughly 10 years; at 4%, roughly 18.</div>
+        </div>
+        <div class="explainer-item">
+          <div class="formula">Retirement benchmark</div>
+          <div class="desc">A widely cited target: roughly 1x your annual salary saved by 30, 3x by 40, 6x by 50, 8x by 60, and 10x by 67. It assumes continuous saving and market-rate returns, so treat it as a checkpoint, not a verdict.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Worth knowing before you act on any of this:</strong> these are general guidelines, not financial advice, and none of them account for your tax situation, dependents, existing debt, or local cost of living. The 20% investing rule and the 20% guilt-free rule use the same percentage on different bases (gross vs. net), so don't assume they're interchangeable. Housing rules overlap by design - check both, and let the stricter one win. If you're carrying high-interest debt, paying that down usually outperforms the investing target above.
+  </div>
+
+  <div class="section" id="study-budget">
+    <div class="section-head">
+      <h2>Study budget - block account</h2>
+      <p>For the months you're living on a blocked account during study. Enter your actual rent - it's taken off the top exactly as you pay it. What's left splits into day-to-day categories with a comfortable ceiling on each; anything over a ceiling moves to savings instead of being spent.</p>
+    </div>
+    <div class="card">
+      <div class="field-row">
+        <div class="field">
+          <label for="blkAmount">Total block account amount</label>
+          <input type="number" id="blkAmount" placeholder="11,904" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="blkMonths">Months the block covers</label>
+          <input type="number" id="blkMonths" placeholder="12" min="1" step="1">
+          <span class="hint">Usually 12 for a one-year block</span>
+        </div>
+        <div class="field">
+          <label for="blkInsurance">Monthly health insurance</label>
+          <input type="number" id="blkInsurance" placeholder="120" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="blkRent">Monthly rent</label>
+          <input type="number" id="blkRent" placeholder="350" min="0" step="any">
+          <span class="hint">Your actual rent - set directly, not a percentage</span>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="result-grid">
+        <div class="result emphasis">
+          <div class="result-label">Monthly release from the block</div>
+          <div class="result-value" id="outBlockMonthly">-</div>
+        </div>
+        <div class="result emphasis">
+          <div class="result-label">Available after insurance and rent</div>
+          <div class="result-value" id="outBlockAvailable">-</div>
+          <div class="result-note">This is what gets split across the categories below.</div>
+        </div>
+      </div>
+      <p class="study-flow-note" id="outBlockWarning"></p>
+    </div>
+
+    <div class="card">
+      <div class="section-head" style="margin-bottom: 16px;">
+        <h2 style="font-size: 19px;">Comfortable monthly ceilings</h2>
+        <p>Optional. Leave a field blank for no ceiling on that category - its share of the budget just stays as calculated.</p>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="capFeeding">Feeding ceiling</label>
+          <input type="number" id="capFeeding" placeholder="No limit" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="capTransport">Transport ceiling</label>
+          <input type="number" id="capTransport" placeholder="No limit" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="capPhone">Phone &amp; data ceiling</label>
+          <input type="number" id="capPhone" placeholder="No limit" min="0" step="any">
+        </div>
+        <div class="field">
+          <label for="capHousehold">Household items ceiling</label>
+          <input type="number" id="capHousehold" placeholder="No limit" min="0" step="any">
+          <span class="hint">Toiletries, air freshener, cleaning supplies</span>
+        </div>
+        <div class="field">
+          <label for="capLaundry">Laundry ceiling</label>
+          <input type="number" id="capLaundry" placeholder="No limit" min="0" step="any">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-head" style="margin-bottom: 16px;">
+        <h2 style="font-size: 19px;">The breakdown</h2>
+        <p>Each category starts at its default share of the available amount. If that share is over the ceiling you set, only the ceiling is spent - the rest is redirected to savings.</p>
+      </div>
+
+      <div class="study-category">
+        <div class="study-category-head">
+          <span class="name">Rent <span style="color: var(--text-secondary); font-weight: 400; font-size: 13px;">(entered directly, not a %)</span></span>
+          <span class="monthly" id="sfRentMonthly">-</span>
+        </div>
+        <div class="study-flow-note">Taken off the top before the split below - it isn't a share of the remaining amount, and it's a monthly figure only.</div>
+      </div>
+
+      <div class="study-category">
+        <div class="study-category-head">
+          <span class="name">Feeding <span style="color: var(--text-secondary); font-weight: 400; font-size: 13px;">(40% share)</span></span>
+          <span class="monthly" id="sfFeedingMonthly">-</span>
+        </div>
+        <div class="study-sub">
+          <div><div class="slabel">Daily</div><div class="svalue" id="sfFeedingDaily">-</div></div>
+          <div><div class="slabel">Weekly</div><div class="svalue" id="sfFeedingWeekly">-</div></div>
+          <div><div class="slabel">Monthly</div><div class="svalue" id="sfFeedingMonthly2">-</div></div>
+        </div>
+        <div class="study-flow-note" id="sfFeedingNote"></div>
+      </div>
+
+      <div class="study-category">
+        <div class="study-category-head">
+          <span class="name">Transport <span style="color: var(--text-secondary); font-weight: 400; font-size: 13px;">(12% share)</span></span>
+          <span class="monthly" id="sfTransportMonthly">-</span>
+        </div>
+        <div class="study-sub">
+          <div><div class="slabel">Daily</div><div class="svalue" id="sfTransportDaily">-</div></div>
+          <div><div class="slabel">Weekly</div><div class="svalue" id="sfTransportWeekly">-</div></div>
+          <div><div class="slabel">Monthly</div><div class="svalue" id="sfTransportMonthly2">-</div></div>
+        </div>
+        <div class="study-flow-note" id="sfTransportNote"></div>
+      </div>
+
+      <div class="study-category">
+        <div class="study-category-head">
+          <span class="name">Phone &amp; data <span style="color: var(--text-secondary); font-weight: 400; font-size: 13px;">(8% share)</span></span>
+          <span class="monthly" id="sfPhoneMonthly">-</span>
+        </div>
+        <div class="study-sub">
+          <div><div class="slabel">Daily</div><div class="svalue" id="sfPhoneDaily">-</div></div>
+          <div><div class="slabel">Weekly</div><div class="svalue" id="sfPhoneWeekly">-</div></div>
+          <div><div class="slabel">Monthly</div><div class="svalue" id="sfPhoneMonthly2">-</div></div>
+        </div>
+        <div class="study-flow-note" id="sfPhoneNote"></div>
+      </div>
+
+      <div class="study-category">
+        <div class="study-category-head">
+          <span class="name">Household items <span style="color: var(--text-secondary); font-weight: 400; font-size: 13px;">(10% share)</span></span>
+          <span class="monthly" id="sfHouseholdMonthly">-</span>
+        </div>
+        <div class="study-sub">
+          <div><div class="slabel">Daily</div><div class="svalue" id="sfHouseholdDaily">-</div></div>
+          <div><div class="slabel">Weekly</div><div class="svalue" id="sfHouseholdWeekly">-</div></div>
+          <div><div class="slabel">Monthly</div><div class="svalue" id="sfHouseholdMonthly2">-</div></div>
+        </div>
+        <div class="study-flow-note" id="sfHouseholdNote"></div>
+      </div>
+
+      <div class="study-category">
+        <div class="study-category-head">
+          <span class="name">Laundry <span style="color: var(--text-secondary); font-weight: 400; font-size: 13px;">(5% share)</span></span>
+          <span class="monthly" id="sfLaundryMonthly">-</span>
+        </div>
+        <div class="study-sub">
+          <div><div class="slabel">Daily</div><div class="svalue" id="sfLaundryDaily">-</div></div>
+          <div><div class="slabel">Weekly</div><div class="svalue" id="sfLaundryWeekly">-</div></div>
+          <div><div class="slabel">Monthly</div><div class="svalue" id="sfLaundryMonthly2">-</div></div>
+        </div>
+        <div class="study-flow-note" id="sfLaundryNote"></div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="result-grid">
+        <div class="result emphasis">
+          <div class="result-label">Savings <span style="font-size: 11px; font-weight: 500;">15% share + redirected overflow</span></div>
+          <div class="result-value" id="sfSavings">-</div>
+          <div class="result-note" id="sfSavingsNote">Anything a category doesn't spend, because it hit its ceiling, lands here automatically.</div>
+        </div>
+        <div class="result">
+          <div class="result-label">Other / miscellaneous <span style="font-size: 11px; font-weight: 500;">10% share</span></div>
+          <div class="result-value" id="sfOther">-</div>
+          <div class="result-note">Personal care, one-off costs, anything not covered above.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>How the redirect works:</strong> rent is whatever you enter - it's taken off the top before anything else is split, since only you know what you actually pay. What's left is divided into fixed shares for feeding, transport, phone and data, household items, and laundry. If you set a ceiling and a category's share would go over it, only the ceiling amount is allocated - the extra doesn't disappear, it moves straight into savings that same month. Categories with no ceiling set just keep their calculated share, unchanged.
+    </div>
+
+    <div class="card report-card" style="margin-top: 16px;">
+      <div>
+        <div class="section-head" style="margin-bottom: 0;">
+          <h2 style="font-size: 19px;">Save your study budget</h2>
+          <p>Your block account breakdown - rent, every category, ceilings, and where any overflow was redirected - as one PDF.</p>
+        </div>
+      </div>
+      <button class="report-btn" onclick="downloadStudyReport()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Download as PDF
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div id="printArea"></div>
+
+<script>
+  const symbolMap = { EUR: 'EUR', USD: 'USD', GBP: 'GBP', NGN: 'NGN' };
+  let currentCurrency = 'EUR';
+
+  function updateThemeButtonLabel(theme) {
+    const btn = document.getElementById('themeToggleBtn');
+    if (btn) btn.innerText = theme === 'dark' ? 'Light mode' : 'Dark mode';
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme')
+      || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try { localStorage.setItem('ff-theme', next); } catch (e) {}
+    updateThemeButtonLabel(next);
+  }
+
+  (function initTheme() {
+    let saved = null;
+    try { saved = localStorage.getItem('ff-theme'); } catch (e) {}
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+      updateThemeButtonLabel(saved);
+    } else {
+      const sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      updateThemeButtonLabel(sysDark ? 'dark' : 'light');
+    }
+  })();
+
+  function fmt(val) {
+    if (val === null || isNaN(val)) return '-';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currentCurrency,
+      maximumFractionDigits: 0
+    }).format(val);
+  }
+
+  function num(id) {
+    const v = parseFloat(document.getElementById(id).value);
+    return isNaN(v) ? null : v;
+  }
+
+  function retirementTarget(age, annualGross) {
+    if (age === null || annualGross === null) return null;
+    const milestones = [
+      { age: 30, mult: 1 },
+      { age: 40, mult: 3 },
+      { age: 50, mult: 6 },
+      { age: 60, mult: 8 },
+      { age: 67, mult: 10 }
+    ];
+    let target = milestones[0];
+    for (const m of milestones) {
+      if (age >= m.age) target = m;
+    }
+    // interpolate lightly toward the next milestone if between two points
+    const next = milestones.find(m => m.age > target.age);
+    if (next && age > target.age) {
+      const span = next.age - target.age;
+      const progress = Math.min(1, (age - target.age) / span);
+      const mult = target.mult + (next.mult - target.mult) * progress;
+      return { mult, refAge: age };
+    }
+    return { mult: target.mult, refAge: age };
+  }
+
+  function fmtPrecise(val) {
+    if (val === null || isNaN(val)) return '-';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currentCurrency,
+      maximumFractionDigits: 2
+    }).format(val);
+  }
+
+  function calcCompoundGrowth() {
+    const initial = num('cgInitial');
+    const monthly = num('cgMonthly');
+    const rate = num('cgRate');
+    const years = num('cgYears');
+
+    if (years === null || years <= 0 || (initial === null && monthly === null)) {
+      document.getElementById('cgFinal').innerText = '-';
+      document.getElementById('cgContributed').innerText = '-';
+      document.getElementById('cgGrowth').innerText = '-';
+      return;
+    }
+
+    const P = initial !== null ? initial : 0;
+    const PMT = monthly !== null ? monthly : 0;
+    const annualRate = rate !== null ? rate : 0;
+    const n = years * 12;
+    const r = (annualRate / 100) / 12;
+
+    let futureValue;
+    if (r === 0) {
+      futureValue = P + PMT * n;
+    } else {
+      futureValue = P * Math.pow(1 + r, n) + PMT * ((Math.pow(1 + r, n) - 1) / r);
+    }
+
+    const contributed = P + PMT * n;
+    const growth = futureValue - contributed;
+
+    document.getElementById('cgFinal').innerText = fmt(futureValue);
+    document.getElementById('cgContributed').innerText = fmt(contributed);
+    document.getElementById('cgGrowth').innerText = fmt(growth);
+  }
+
+  function calcStudyBudget() {
+    const blockAmount = num('blkAmount');
+    const blockMonths = num('blkMonths');
+    const insurance = num('blkInsurance');
+    const rent = num('blkRent');
+    const months = (blockMonths !== null && blockMonths > 0) ? blockMonths : 12;
+
+    const categories = [
+      { key: 'Feeding', pct: 0.40, capId: 'capFeeding' },
+      { key: 'Transport', pct: 0.12, capId: 'capTransport' },
+      { key: 'Phone', pct: 0.08, capId: 'capPhone' },
+      { key: 'Household', pct: 0.10, capId: 'capHousehold' },
+      { key: 'Laundry', pct: 0.05, capId: 'capLaundry' }
+    ];
+
+    if (blockAmount === null) {
+      document.getElementById('outBlockMonthly').innerText = '-';
+      document.getElementById('outBlockAvailable').innerText = '-';
+      document.getElementById('outBlockWarning').innerText = '';
+      document.getElementById('sfRentMonthly').innerText = '-';
+      categories.forEach(c => {
+        document.getElementById('sf' + c.key + 'Monthly').innerText = '-';
+        document.getElementById('sf' + c.key + 'Monthly2').innerText = '-';
+        document.getElementById('sf' + c.key + 'Weekly').innerText = '-';
+        document.getElementById('sf' + c.key + 'Daily').innerText = '-';
+        document.getElementById('sf' + c.key + 'Note').innerText = '';
+      });
+      document.getElementById('sfSavings').innerText = '-';
+      document.getElementById('sfOther').innerText = '-';
+      document.getElementById('sfSavingsNote').innerText = 'Anything a category doesn\'t spend, because it hit its ceiling, lands here automatically.';
+      return;
+    }
+
+    const monthlyRelease = blockAmount / months;
+    const insuranceVal = insurance !== null ? insurance : 0;
+    const rentVal = rent !== null ? rent : 0;
+    const available = Math.max(0, monthlyRelease - insuranceVal - rentVal);
+
+    document.getElementById('outBlockMonthly').innerText = fmt(monthlyRelease);
+    document.getElementById('outBlockAvailable').innerText = fmt(available);
+
+    const shortfall = (insuranceVal + rentVal) - monthlyRelease;
+    document.getElementById('outBlockWarning').innerText = shortfall > 0
+      ? 'Insurance and rent alone come to ' + fmt(insuranceVal + rentVal) + ', which is ' + fmt(shortfall) + ' more than this month\'s release. There is nothing left to split below.'
+      : '';
+
+    document.getElementById('sfRentMonthly').innerText = fmt(rentVal);
+
+    let overflow = 0;
+    categories.forEach(c => {
+      const raw = available * c.pct;
+      const capValRaw = num(c.capId);
+      const cap = (capValRaw !== null && capValRaw >= 0) ? capValRaw : Infinity;
+      const allocated = Math.min(raw, cap);
+      const over = Math.max(0, raw - cap);
+      overflow += over;
+
+      document.getElementById('sf' + c.key + 'Monthly').innerText = fmt(allocated);
+      document.getElementById('sf' + c.key + 'Monthly2').innerText = fmt(allocated);
+      document.getElementById('sf' + c.key + 'Weekly').innerText = fmtPrecise(allocated / 4.345);
+      document.getElementById('sf' + c.key + 'Daily').innerText = fmtPrecise(allocated / 30);
+
+      const note = document.getElementById('sf' + c.key + 'Note');
+      note.innerText = over > 0
+        ? 'Capped at your ceiling - ' + fmt(over) + ' redirected to savings this month.'
+        : '';
+    });
+
+    const savingsAmount = (available * 0.15) + overflow;
+    const otherAmount = available * 0.10;
+
+    document.getElementById('sfSavings').innerText = fmt(savingsAmount);
+    document.getElementById('sfOther').innerText = fmt(otherAmount);
+    document.getElementById('sfSavingsNote').innerText = overflow > 0
+      ? 'Includes ' + fmt(overflow) + ' redirected from categories that hit their ceiling this month.'
+      : 'Anything a category doesn\'t spend, because it hit its ceiling, lands here automatically.';
+  }
+
+  function budgetTierFor(net, expenses) {
+    // Tiers are based on how much breathing room net income gives over expenses -
+    // this works across currencies and countries without hardcoding an income figure.
+    // Balanced mirrors the most common habit among self-made millionaires studied by
+    // researchers like Corley and Fidelity: consistently investing around 20% of income.
+    // High performer mirrors more aggressive savers in the same research, some of whom
+    // reach 30-50%+. Tight prioritizes covering needs first when income barely covers them.
+    if (net === null || expenses === null || expenses <= 0) {
+      return {
+        name: 'Balanced mode',
+        desc: ' - enter your monthly net income and expenses above so this can adapt to you. Until then, these are the standard, middle-of-the-road figures.',
+        housing: 0.60, guiltFree: 0.20, invest: 0.20, rent: 0.30, emergencyMonths: 6
+      };
+    }
+    const ratio = net / expenses;
+    if (ratio < 1.3) {
+      return {
+        name: 'Building stability mode',
+        desc: ' - your income is close to your expenses, so the split below leans toward covering needs first, with a smaller but real start on investing. Grow the investing share as the gap between income and expenses widens.',
+        housing: 0.70, guiltFree: 0.05, invest: 0.05, rent: 0.35, emergencyMonths: 3
+      };
+    }
+    if (ratio >= 2.5) {
+      return {
+        name: 'High performer mode',
+        desc: ' - your income comfortably clears your expenses, so this mirrors research on self-made millionaires: keep housing modest relative to income and invest aggressively rather than letting spending expand with earnings.',
+        housing: 0.45, guiltFree: 0.15, invest: 0.30, rent: 0.20, emergencyMonths: 6
+      };
+    }
+    return {
+      name: 'Balanced mode',
+      desc: ' - your income gives you reasonable room over your expenses, so the standard, widely used split applies.',
+      housing: 0.60, guiltFree: 0.20, invest: 0.20, rent: 0.30, emergencyMonths: 6
+    };
+  }
+
+  function recalc() {
+    const gross = num('grossIncome');
+    const net = num('netIncome');
+    const expenses = num('expenses');
+    const debt = num('debtPayments');
+    const returnRate = num('returnRate');
+    const age = num('age');
+    const annualGross = gross !== null ? gross * 12 : null;
+
+    const tier = budgetTierFor(net, expenses);
+    document.getElementById('modeLabel').innerText = tier.name;
+    document.getElementById('modeDesc').innerText = tier.desc;
+
+    document.getElementById('outFI').innerText = net !== null ? fmt(net * 240) : '-';
+    document.getElementById('outInvest20').innerText = gross !== null ? fmt(gross * tier.invest) : '-';
+    document.getElementById('outHousing60').innerText = net !== null ? fmt(net * tier.housing) : '-';
+    document.getElementById('outRent30').innerText = gross !== null ? fmt(gross * tier.rent) : '-';
+    document.getElementById('outGuiltFree').innerText = net !== null ? fmt(net * tier.guiltFree) : '-';
+    document.getElementById('outEmergency').innerText = expenses !== null ? fmt(expenses * tier.emergencyMonths) : '-';
+
+    document.getElementById('basisInvest').innerText = 'Gross x ' + tier.invest.toFixed(2);
+    document.getElementById('basisHousing').innerText = 'Net x ' + tier.housing.toFixed(2);
+    document.getElementById('basisRent').innerText = 'Gross x ' + tier.rent.toFixed(2);
+    document.getElementById('basisGuiltFree').innerText = 'Net x ' + tier.guiltFree.toFixed(2);
+    document.getElementById('basisEmergency').innerText = 'Expenses x ' + tier.emergencyMonths;
+
+    document.getElementById('outDTI36').innerText = gross !== null ? fmt(gross * 0.36) : '-';
+    document.getElementById('outDTIActual').innerText = (gross !== null && debt !== null && gross > 0)
+      ? ((debt / gross) * 100).toFixed(1) + '%'
+      : '-';
+    document.getElementById('outCar10').innerText = gross !== null ? fmt(gross * 0.10) : '-';
+    document.getElementById('outLifeInsurance').innerText = annualGross !== null ? fmt(annualGross * 10) : '-';
+
+    document.getElementById('outRule72').innerText = (returnRate !== null && returnRate > 0)
+      ? (72 / returnRate).toFixed(1) + ' years'
+      : '-';
+
+    const bench = retirementTarget(age, annualGross);
+    document.getElementById('outRetirementBenchmark').innerText = (bench && annualGross !== null)
+      ? fmt(annualGross * bench.mult) + ' (~' + bench.mult.toFixed(1) + 'x salary)'
+      : '-';
+
+    calcStudyBudget();
+    calcCompoundGrowth();
+  }
+
+  function inputVal(id) {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    const v = parseFloat(el.value);
+    return isNaN(v) ? null : v;
+  }
+
+  function moneyRow(label, id, emptyLabel) {
+    const v = inputVal(id);
+    const display = v !== null ? fmt(v) : (emptyLabel || 'Not provided');
+    return '<div class="print-row"><span class="plabel">' + label + '</span><span class="pvalue">' + display + '</span></div>';
+  }
+
+  function rawRow(label, id, suffix, emptyLabel) {
+    const v = inputVal(id);
+    const display = v !== null ? (v + (suffix || '')) : (emptyLabel || 'Not provided');
+    return '<div class="print-row"><span class="plabel">' + label + '</span><span class="pvalue">' + display + '</span></div>';
+  }
+
+  function outputRow(label, valueId, noteId) {
+    const el = document.getElementById(valueId);
+    let value = el ? el.innerText.trim() : '';
+    if (value === '' || value === '-') value = 'Not provided';
+    const note = noteId ? document.getElementById(noteId) : null;
+    const noteText = note && note.innerText.trim() ? '<div class="print-note">' + note.innerText.trim() + '</div>' : '';
+    return '<div class="print-row"><span class="plabel">' + label + '</span><span class="pvalue">' + value + '</span></div>' + noteText;
+  }
+
+  function basisLabel(id) {
+    const el = document.getElementById(id);
+    return el ? el.innerText.trim() : '';
+  }
+
+  function todayStamp() {
+    const d = new Date();
+    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  function runPrint(html, docTitle) {
+    document.getElementById('printArea').innerHTML = html;
+    const prevTitle = document.title;
+    document.title = docTitle;
+    window.print();
+    document.title = prevTitle;
+  }
+
+  function downloadFinancialReport() {
+    let html = '';
+    html += '<div class="print-title">Financial Breakdown</div>';
+    html += '<div class="print-meta">Generated ' + todayStamp() + ' - Financial Framework - ' + document.getElementById('modeLabel').innerText + '</div>';
+
+    html += '<div class="print-section"><h4>Your numbers</h4>';
+    html += moneyRow('Monthly gross income', 'grossIncome');
+    html += moneyRow('Monthly net (take-home)', 'netIncome');
+    html += moneyRow('Monthly expenses', 'expenses');
+    html += moneyRow('Monthly debt payments', 'debtPayments');
+    html += rawRow('Expected annual return', 'returnRate', '%');
+    html += rawRow('Current age', 'age');
+    html += '</div>';
+
+    html += '<div class="print-section"><h4>Wealth and budget targets (' + document.getElementById('modeLabel').innerText + ')</h4>';
+    html += outputRow('Financial independence portfolio (net x 240)', 'outFI');
+    html += outputRow('Monthly investing target (' + basisLabel('basisInvest') + ')', 'outInvest20');
+    html += outputRow('Total housing cap (' + basisLabel('basisHousing') + ')', 'outHousing60');
+    html += outputRow('Rent ceiling (' + basisLabel('basisRent') + ')', 'outRent30');
+    html += outputRow('Guilt-free spending (' + basisLabel('basisGuiltFree') + ')', 'outGuiltFree');
+    html += outputRow('Emergency fund target (' + basisLabel('basisEmergency') + ')', 'outEmergency');
+    html += '</div>';
+
+    html += '<div class="print-section"><h4>Debt, insurance, and affordability</h4>';
+    html += outputRow('Debt-to-income ceiling (gross x 0.36)', 'outDTI36');
+    html += outputRow('Your current debt-to-income', 'outDTIActual');
+    html += outputRow('Car and transport cap (gross x 0.10)', 'outCar10');
+    html += outputRow('Life insurance coverage (annual gross x 10)', 'outLifeInsurance');
+    html += '</div>';
+
+    html += '<div class="print-section"><h4>Growth and time</h4>';
+    html += outputRow('Years to double your money (Rule of 72)', 'outRule72');
+    html += outputRow('Retirement savings benchmark', 'outRetirementBenchmark');
+    html += '</div>';
+
+    html += '<div class="print-section"><h4>Compound growth projection</h4>';
+    html += moneyRow('Starting amount', 'cgInitial', '0');
+    html += moneyRow('Monthly contribution', 'cgMonthly');
+    html += rawRow('Expected annual return', 'cgRate', '%');
+    html += rawRow('Number of years', 'cgYears');
+    html += outputRow('Final value', 'cgFinal');
+    html += outputRow('Total contributed', 'cgContributed');
+    html += outputRow('Growth from returns', 'cgGrowth');
+    html += '</div>';
+
+    html += '<div class="print-footer">These figures apply general rules of thumb to the numbers provided and are not financial advice. Generated with Financial Framework.</div>';
+
+    runPrint(html, 'Financial Breakdown - ' + todayStamp());
+  }
+
+  function downloadStudyReport() {
+    let html = '';
+    html += '<div class="print-title">Study Budget - Block Account</div>';
+    html += '<div class="print-meta">Generated ' + todayStamp() + ' - Financial Framework</div>';
+
+    html += '<div class="print-section"><h4>Block account</h4>';
+    html += moneyRow('Total block account amount', 'blkAmount');
+    html += rawRow('Months the block covers', 'blkMonths', '', '12 (default)');
+    html += moneyRow('Monthly health insurance', 'blkInsurance', '0');
+    html += moneyRow('Monthly rent', 'blkRent', '0');
+    html += outputRow('Monthly release from the block', 'outBlockMonthly');
+    html += outputRow('Available after insurance and rent', 'outBlockAvailable');
+    html += '</div>';
+
+    html += '<div class="print-section"><h4>Monthly allocation</h4>';
+    html += outputRow('Rent (entered directly)', 'sfRentMonthly');
+    html += outputRow('Feeding (40% share)', 'sfFeedingMonthly', 'sfFeedingNote');
+    html += outputRow('Transport (12% share)', 'sfTransportMonthly', 'sfTransportNote');
+    html += outputRow('Phone & data (8% share)', 'sfPhoneMonthly', 'sfPhoneNote');
+    html += outputRow('Household items (10% share)', 'sfHouseholdMonthly', 'sfHouseholdNote');
+    html += outputRow('Laundry (5% share)', 'sfLaundryMonthly', 'sfLaundryNote');
+    html += outputRow('Savings (15% share + overflow)', 'sfSavings', 'sfSavingsNote');
+    html += outputRow('Other / miscellaneous (10% share)', 'sfOther');
+    html += '</div>';
+
+    html += '<div class="print-section"><h4>Ceilings set</h4>';
+    html += moneyRow('Feeding ceiling', 'capFeeding', 'No limit set');
+    html += moneyRow('Transport ceiling', 'capTransport', 'No limit set');
+    html += moneyRow('Phone & data ceiling', 'capPhone', 'No limit set');
+    html += moneyRow('Household items ceiling', 'capHousehold', 'No limit set');
+    html += moneyRow('Laundry ceiling', 'capLaundry', 'No limit set');
+    html += '</div>';
+
+    html += '<div class="print-footer">These figures apply general rules of thumb to the numbers provided and are not financial advice. Generated with Financial Framework.</div>';
+
+    runPrint(html, 'Study Budget - ' + todayStamp());
+  }
+
+  document.querySelectorAll('#currencySeg button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#currencySeg button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCurrency = btn.dataset.cur;
+      recalc();
+    });
+  });
+
+  [
+    'grossIncome', 'netIncome', 'expenses', 'debtPayments', 'returnRate', 'age',
+    'blkAmount', 'blkMonths', 'blkInsurance', 'blkRent',
+    'capFeeding', 'capTransport', 'capPhone', 'capHousehold', 'capLaundry',
+    'cgInitial', 'cgMonthly', 'cgRate', 'cgYears'
+  ].forEach(id => {
+    document.getElementById(id).addEventListener('input', recalc);
+  });
+
+  recalc();
+</script>
+</body>
+</html>
