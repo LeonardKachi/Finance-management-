@@ -51,6 +51,3 @@ This is a single static HTML file with no build step and no dependencies beyond 
 
 This tool applies general, widely used rules of thumb to the numbers a visitor provides. It is not financial advice and doesn't account for taxes, dependents, local cost of living, or individual circumstances. It's a starting point for thinking about money, not a final answer - the site says as much in its own "About" section.
 
-## License
-
-Add a license of your choice here before making the repository public (MIT is a common, permissive choice for a project like this).
