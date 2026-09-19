@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Financial Framework</title>
+<title>Financial Framework - budgeting, debt, and investing basics</title>
+<meta name="description" content="A free calculator for budgeting, debt, saving, and investing basics - built for anyone taking their money seriously for the first time. No sign-up, nothing leaves your browser.">
+<meta name="theme-color" content="#0066cc">
+<meta property="og:title" content="Financial Framework">
+<meta property="og:description" content="A free calculator for budgeting, debt, saving, and investing basics - no sign-up, nothing leaves your browser.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230066cc'/%3E%3Cpath d='M20 68 L38 46 L54 58 L80 28' stroke='white' stroke-width='8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <style>
   :root {
     --bg: #f5f5f7;
@@ -354,6 +360,56 @@
   }
   .theme-toggle:hover { color: var(--text); }
 
+  .skip-link {
+    position: absolute;
+    top: -48px;
+    left: 12px;
+    background: var(--accent);
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    z-index: 100;
+    transition: top 0.15s ease;
+  }
+  .skip-link:focus { top: 12px; }
+
+  .site-footer {
+    text-align: center;
+    padding-top: 32px;
+    margin-top: 8px;
+    border-top: 1px solid var(--divider);
+  }
+  .site-footer p {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0 0 6px;
+  }
+  .site-footer a { color: var(--accent); text-decoration: none; }
+  .site-footer a:hover { text-decoration: underline; }
+
+  .back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    z-index: 15;
+  }
+  .back-to-top.visible { display: flex; }
+  .back-to-top svg { width: 18px; height: 18px; }
   /* Investment type cards */
   .invest-grid {
     display: grid;
@@ -534,15 +590,14 @@
   #printArea { display: none; }
 
   @media print {
-    body * { visibility: hidden; }
-    #printArea, #printArea * { visibility: visible; }
+    html, body { height: auto !important; }
+    .page, .back-to-top, .skip-link { display: none !important; }
     #printArea {
       display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: static;
       width: 100%;
       padding: 0;
+      margin: 0;
       background: #ffffff;
       color: #111111;
     }
@@ -592,7 +647,8 @@
 </style>
 </head>
 <body>
-<div class="page">
+<a href="#main-content" class="skip-link">Skip to content</a>
+<div class="page" id="main-content">
 
   <div class="hero">
     <h1>Financial Framework</h1>
@@ -1232,7 +1288,16 @@
     </div>
   </div>
 
+  <div class="site-footer">
+    <p>Financial Framework - a free, open calculator. Nothing you enter is stored or sent anywhere; every calculation happens in this browser.</p>
+    <p>Not financial advice. See the <a href="#about">About section</a> for what this tool does and doesn't do.</p>
+  </div>
+
 </div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+</button>
 
 <div id="printArea"></div>
 
@@ -1265,6 +1330,12 @@
       updateThemeButtonLabel(sysDark ? 'dark' : 'light');
     }
   })();
+
+  window.addEventListener('scroll', () => {
+    const btn = document.getElementById('backToTop');
+    if (window.scrollY > 600) btn.classList.add('visible');
+    else btn.classList.remove('visible');
+  });
 
   function fmt(val) {
     if (val === null || isNaN(val)) return '-';
